@@ -3,9 +3,6 @@
 # This software is distributed under the GNU General Public 
 # Licence (version 2 or later); please refer to the file 
 # Licence.txt, included with the software, for details.
-
-
-
 # Preparations
 from matplotlib.pyplot import imread
 import numpy as np
@@ -15,7 +12,6 @@ from scipy.ndimage import gaussian_filter, map_coordinates
 from utils import affinefit
 import warnings
 warnings.filterwarnings('ignore')
-
 
 ## Load test images
 man = imread('man.jpg') / 255.
@@ -33,10 +29,8 @@ wolft = map_coordinates(wolf, (pt[1,:].reshape(man.shape), pt[0,:].reshape(man.s
 
 ## Below we simply blend the aligned images using additive superimposition
 additive_superimposition = man + wolft
-
 ## Next we create two different Gaussian kernels for low-pass filtering
 ## the two images
-
 
 # naive blending by additive superimposition for illustration
 superimpose = man + wolft
@@ -48,7 +42,6 @@ man_lowpass = gaussian_filter(man, sigmaA, mode='nearest')
 wolft_lowpass = gaussian_filter(wolft, sigmaB, mode='nearest')
 # We use gaussian_filter in this case as it is significantly faster
 
-
 ## Your task is to create a hybrid image by combining a low-pass filtered 
 ## version of the human face with a high-pass filtered wolf face
  
@@ -58,13 +51,12 @@ wolft_lowpass = gaussian_filter(wolft, sigmaB, mode='nearest')
  
 ## Thus, your task is to replace the zero image on the following line
 ## with a high-pass filtered version of 'wolft'
-
 wolft_highpass = np.zeros(man_lowpass.shape);
 
 ##--your-code-starts-here--##
 wolft_highpass = wolft - wolft_lowpass
 ##--your-code-ends-here--##
- 
+
 ## Replace also the zero image below with the correct hybrid image
 hybrid_image = np.zeros(man_lowpass.shape)
 
@@ -72,7 +64,7 @@ hybrid_image = np.zeros(man_lowpass.shape)
 hybrid_image = wolft_highpass + man_lowpass
 ##--your-code-ends-here--##
 
-## Notice how strongly the interpretation of the hybrid image is affected 
+## Notice how strongly the interpretation of the hybrid image is affected
 ## by the viewing distance
 
 ## Display input images and both output images.
@@ -105,7 +97,6 @@ F_wolft_highpass = fftshift(fft2(wolft_highpass))
 fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(16,8))
 plt.suptitle("Magnitudes of the Fourier transforms", fontsize=20)
 ax = axes.ravel()
-
 ax[0].imshow(np.log(np.abs(F_man)), cmap='gray')
 ax[0].set_title("log(abs(F_man))")
 ax[1].imshow(np.log(np.abs(F_man_lowpass)), cmap='gray')

@@ -1,5 +1,4 @@
 # Copyright (C) 2018 Santiago Cortes, Juha Ylioinas
-#
 # This software is distributed under the GNU General Public 
 # Licence (version 2 or later); please refer to the file 
 # Licence.txt, included with the software, for details.
@@ -29,75 +28,62 @@ imns = imnoise(im, 'salt & pepper', 0.05) * 1.
 imng = im + 0.05*np.random.randn(im.shape[0],im.shape[1])
 
 # Display original and noise corrupted images
-# fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(16,8))
-# ax = axes.ravel()
-# ax[0].imshow(im, cmap='gray')
-# ax[0].axis('off')
-# ax[1].imshow(imns, cmap='gray')
-# ax[1].axis('off')
-# ax[2].imshow(imng, cmap='gray')
-# ax[2].axis('off')
-# plt.tight_layout()
-# plt.suptitle("Original, 'salt and pepper' and gaussian noise corrupted", fontsize=20)
-# plt.subplots_adjust(top=1.2)
-#plt.show()
+fig, axes = plt.subplots(nrows=1, ncols=3, figsize=(16,8))
+ax = axes.ravel()
+ax[0].imshow(im, cmap='gray')
+ax[0].axis('off')
+ax[1].imshow(imns, cmap='gray')
+ax[1].axis('off')
+ax[2].imshow(imng, cmap='gray')
+ax[2].axis('off')
+plt.tight_layout()
+plt.suptitle("Original, 'salt and pepper' and gaussian noise corrupted", fontsize=20)
+plt.subplots_adjust(top=1.2)
+plt.show()
 
 ## Apply Gaussian filter of std 2.5 
 sigmad = 2.5
 g,_,_,_,_,_, = gaussian2(sigmad)
-#print(g)
-
 gflt_imns = conv2(imns, g, mode='reflect')
 gflt_imng = conv2(imng, g, mode='reflect')
 
 ######################## Simple Separable #################################
-# g1 = np.matrix('1 2 1; 2 4 2; 1 2 1')
-# print('############## input filter ##############')
-# u, s, v = np.linalg.svd(g1)
-# print('############## SVD components ##############')
-# print('u=', u)
-# print('s=',s)
-# print('vh=',v)
-#
-# print('############## SVD elements u0, sqrt(s[0]), v0 ##############')
-# u = u[:,0]
-# s = np.sqrt(s[0])
-# v = v[0,:]
-#
-# print('u0=', u)
-# print('s_sqrt=',s)
-# print('v0=',v)
-#
-# print('############## Resulting kernels ##############')
-# print('horizontal kernel=', s*u)
-# print('vertical kernel=', s*np.transpose(v))
-# print('G matrix = ', (s*u) * (s*v))
+g1 = np.matrix('1 2 1; 2 4 2; 1 2 1')
+print('############## input filter ##############')
+u, s, v = np.linalg.svd(g1)
+print('############## SVD components ##############')
+print('u=\n', u)
+print('s=\n',s)
+print('vh=\n',v)
+print('vh=\n',v)
 
-######################## Implementation #################################
+print('############## SVD elements u0, sqrt(s[0]), v0 ##############')
+u = u[:,0]
+s = np.sqrt(s[0])
+v = v[0,:]
+
+print('u0=\n', u)
+print('s_sqrt=\n',s)
+print('v0=\n',v)
+
+print('############## Resulting kernels ##############')
+print('horizontal kernel= \n', s*u)
+print('vertical kernel= \n', s*v)
+print('G matrix = \n', (s*u) * (s*v))
+
 ## Instead of directly filtering with g, make a separable implementation
 ## where you use horizontal and vertical 1D convolutions
 ## That is, replace the above two lines, you can use conv1 instead
 ## The result should not change.
 ## See Szeliski's Book chapter 3.2.1 Separable filtering
 ## Note: numpy's svd gives V as transposed
-
 ##--your-code-starts-here--##
 u, s, v = np.linalg.svd(g)
-#print('u=', u)
-#print('s=',s)
-#print('vh=',v)
-
 u = u[:,0]
 s = np.sqrt(s[0])
 v = v[0,:]
-
-
 u_kernel = s*u
 v_kernel = s*v
-#print('subtr =', g - (u_kernel * v_kernel))
-#print('vert kernel = \n',vert_kernel)
-#print('horiz kernel = \n',horiz_kernel)
-
 gflt_imns_sep = conv1(imns, u_kernel, axis=0, mode='reflect')
 gflt_imns_sep = conv1(gflt_imns_sep, v_kernel, axis=1, mode='reflect')
 gflt_imng_sep = conv1(imng, u_kernel, axis=0, mode='reflect')
@@ -111,8 +97,6 @@ def median_filter(img, wsize):
     output = np.zeros([nrows, ncols])
     
     k = (wsize - 1) / 2
-        
-        
     for i in range(nrows):
         for j in range(ncols):
 
