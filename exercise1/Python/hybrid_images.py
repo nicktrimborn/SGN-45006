@@ -62,16 +62,15 @@ wolft_lowpass = gaussian_filter(wolft, sigmaB, mode='nearest')
 wolft_highpass = np.zeros(man_lowpass.shape);
 
 ##--your-code-starts-here--##
-
+wolft_highpass = wolft - wolft_lowpass
 ##--your-code-ends-here--##
  
 ## Replace also the zero image below with the correct hybrid image
 hybrid_image = np.zeros(man_lowpass.shape)
 
 ##--your-code-starts-here--##
-
+hybrid_image = wolft_highpass + man_lowpass
 ##--your-code-ends-here--##
- 
 
 ## Notice how strongly the interpretation of the hybrid image is affected 
 ## by the viewing distance
@@ -97,7 +96,10 @@ plt.show()
 ## for wolf/man and their filtered results using fft2 and fftshift
 
 ##--your-code-starts-here--##
-
+F_man = fftshift(fft2(man))
+F_man_lowpass = fftshift(fft2(man_lowpass))
+F_wolft = fftshift(fft2(wolft))
+F_wolft_highpass = fftshift(fft2(wolft_highpass))
 ##--your-code-ends-here--##
 
 fig, axes = plt.subplots(nrows=1, ncols=4, figsize=(16,8))

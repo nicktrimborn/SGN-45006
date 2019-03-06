@@ -4,7 +4,6 @@
 # Licence (version 2 or later); please refer to the file 
 # Licence.txt, included with the software, for details.
 
-
 # Preparations
 from matplotlib.pyplot import imread
 #from skimage.transform import resize
@@ -41,7 +40,7 @@ imng = im + 0.05*np.random.randn(im.shape[0],im.shape[1])
 # plt.tight_layout()
 # plt.suptitle("Original, 'salt and pepper' and gaussian noise corrupted", fontsize=20)
 # plt.subplots_adjust(top=1.2)
-# plt.show()
+#plt.show()
 
 ## Apply Gaussian filter of std 2.5 
 sigmad = 2.5
@@ -51,8 +50,7 @@ g,_,_,_,_,_, = gaussian2(sigmad)
 gflt_imns = conv2(imns, g, mode='reflect')
 gflt_imng = conv2(imng, g, mode='reflect')
 
-
-######################## Simple Seperable #################################
+######################## Simple Separable #################################
 # g1 = np.matrix('1 2 1; 2 4 2; 1 2 1')
 # print('############## input filter ##############')
 # u, s, v = np.linalg.svd(g1)
@@ -75,8 +73,7 @@ gflt_imng = conv2(imng, g, mode='reflect')
 # print('vertical kernel=', s*np.transpose(v))
 # print('G matrix = ', (s*u) * (s*v))
 
-
-######################## Implemention #################################
+######################## Implementation #################################
 ## Instead of directly filtering with g, make a separable implementation
 ## where you use horizontal and vertical 1D convolutions
 ## That is, replace the above two lines, you can use conv1 instead
@@ -86,19 +83,26 @@ gflt_imng = conv2(imng, g, mode='reflect')
 
 ##--your-code-starts-here--##
 u, s, v = np.linalg.svd(g)
+#print('u=', u)
+#print('s=',s)
+#print('vh=',v)
 
-#gflt_imns_sep = conv1(imns, g, mode='reflect')
-#gflt_imns_sep = conv1(imns, g, mode='reflect')
+u = u[:,0]
+s = np.sqrt(s[0])
+v = v[0,:]
 
 
+u_kernel = s*u
+v_kernel = s*v
+#print('subtr =', g - (u_kernel * v_kernel))
+#print('vert kernel = \n',vert_kernel)
+#print('horiz kernel = \n',horiz_kernel)
 
-
-
-
-
+gflt_imns_sep = conv1(imns, u_kernel, axis=0, mode='reflect')
+gflt_imns_sep = conv1(gflt_imns_sep, v_kernel, axis=1, mode='reflect')
+gflt_imng_sep = conv1(imng, u_kernel, axis=0, mode='reflect')
+gflt_imng_sep = conv1(gflt_imng_sep, v_kernel, axis=1, mode='reflect')
 ##--your-code-ends-here--##
-
-
 
 # Median filtering is done by extracting a local patch from the input image
 # and calculating its median
@@ -121,11 +125,10 @@ def median_filter(img, wsize):
             
             # Calculate the median value, e.g using numpy, from the extracted 
             # local region and store it to output using correct indexing.
-            
-            ##--your-code-starts-here--##
 
+            ##--your-code-starts-here--##
+            output[i, j] = np.median(img_patch)
             ##--your-code-ends-here--##
-            
     return output
 
 ## Apply median filtering, use neighborhood size 5x5
@@ -133,7 +136,8 @@ def median_filter(img, wsize):
 ## Use the median_filter function  above
     
 ##--your-code-starts-here--##
-
+medflt_imns = median_filter(imns,5)
+medflt_imng = median_filter(imng,5)
 ##--your-code-ends-here--##
 
 
@@ -142,30 +146,30 @@ def median_filter(img, wsize):
 ## Use sigma value 2.5 for the domain kernel and 0.1 for range kernel.
 
 ## Set bilateral filter parameters. (Replace with your values)
-wsize = None
-sigma_d = None
-sigma_r = None
+wsize = 11
+sigma_d = 2.5
+sigma_r = 0.1
 
-#bflt_imns = bilateral_filter(imns, wsize, sigma_d, sigma_r)
-#bflt_imng = bilateral_filter(imng, wsize, sigma_d, sigma_r)
+bflt_imns = bilateral_filter(imns, wsize, sigma_d, sigma_r)
+bflt_imng = bilateral_filter(imng, wsize, sigma_d, sigma_r)
 
 
 # Display filtering results
-# fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16,8))
-# ax = axes.ravel()
-# ax[0].imshow(imns, cmap='gray')
-# ax[0].set_title("Input image")
-# ax[1].imshow(gflt_imns, cmap='gray')
-# ax[1].set_title("Result of gaussian filtering")
-# #ax[2].imshow(medflt_imns, cmap='gray')
-# ax[2].set_title("Result of median filtering")
-# #ax[3].imshow(bflt_imns, cmap='gray')
-# ax[3].set_title("Result of bilateral filtering")
-# #ax[4].imshow(imng, cmap='gray')
-# #ax[5].imshow(gflt_imng, cmap='gray')
-# #ax[6].imshow(medflt_imng, cmap='gray')
-# #ax[7].imshow(bflt_imng, cmap='gray')
-# plt.suptitle("Filtering results", fontsize=20)
-# plt.show()
+fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16,8))
+ax = axes.ravel()
+ax[0].imshow(imns, cmap='gray')
+ax[0].set_title("Input image")
+ax[1].imshow(gflt_imns, cmap='gray')
+ax[1].set_title("Result of gaussian filtering")
+ax[2].imshow(medflt_imns, cmap='gray')
+ax[2].set_title("Result of median filtering")
+ax[3].imshow(bflt_imns, cmap='gray')
+ax[3].set_title("Result of bilateral filtering")
+ax[4].imshow(imng, cmap='gray')
+ax[5].imshow(gflt_imng, cmap='gray')
+ax[6].imshow(medflt_imng, cmap='gray')
+ax[7].imshow(bflt_imng, cmap='gray')
+plt.suptitle("Filtering results", fontsize=20)
+plt.show()
 
 
