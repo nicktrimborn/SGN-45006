@@ -41,35 +41,32 @@ plt.suptitle("Original, 'salt and pepper' and gaussian noise corrupted", fontsiz
 plt.subplots_adjust(top=1.2)
 plt.show()
 
-## Apply Gaussian filter of std 2.5 
-sigmad = 2.5
-g,_,_,_,_,_, = gaussian2(sigmad)
-gflt_imns = conv2(imns, g, mode='reflect')
-gflt_imng = conv2(imng, g, mode='reflect')
-
-######################## Simple Separable #################################
+######################## Simple Separable example #################################
 g1 = np.matrix('1 2 1; 2 4 2; 1 2 1')
-print('############## input filter ##############')
 u, s, v = np.linalg.svd(g1)
-print('############## SVD components ##############')
+print('############## SVD ##############')
 print('u=\n', u)
 print('s=\n',s)
-print('vh=\n',v)
 print('vh=\n',v)
 
 print('############## SVD elements u0, sqrt(s[0]), v0 ##############')
 u = u[:,0]
 s = np.sqrt(s[0])
 v = v[0,:]
-
 print('u0=\n', u)
 print('s_sqrt=\n',s)
 print('v0=\n',v)
 
 print('############## Resulting kernels ##############')
-print('horizontal kernel= \n', s*u)
-print('vertical kernel= \n', s*v)
-print('G matrix = \n', (s*u) * (s*v))
+print('u kernel= \n', s*u)
+print('v kernel= \n', s*v)
+print('G filter = \n', (s*u) * (s*v))
+
+## Apply Gaussian filter of std 2.5
+sigmad = 2.5
+g,_,_,_,_,_, = gaussian2(sigmad)
+#gflt_imns = conv2(imns, g, mode='reflect')
+#gflt_imng = conv2(imng, g, mode='reflect')
 
 ## Instead of directly filtering with g, make a separable implementation
 ## where you use horizontal and vertical 1D convolutions
@@ -77,6 +74,7 @@ print('G matrix = \n', (s*u) * (s*v))
 ## The result should not change.
 ## See Szeliski's Book chapter 3.2.1 Separable filtering
 ## Note: numpy's svd gives V as transposed
+
 ##--your-code-starts-here--##
 u, s, v = np.linalg.svd(g)
 u = u[:,0]
@@ -86,8 +84,10 @@ u_kernel = s*u
 v_kernel = s*v
 gflt_imns_sep = conv1(imns, u_kernel, axis=0, mode='reflect')
 gflt_imns_sep = conv1(gflt_imns_sep, v_kernel, axis=1, mode='reflect')
+gflt_imns = gflt_imns_sep #replaced with separable version of filter
 gflt_imng_sep = conv1(imng, u_kernel, axis=0, mode='reflect')
 gflt_imng_sep = conv1(gflt_imng_sep, v_kernel, axis=1, mode='reflect')
+gflt_imng = gflt_imng_sep #replaced with separable version of filter
 ##--your-code-ends-here--##
 
 # Median filtering is done by extracting a local patch from the input image
@@ -124,11 +124,9 @@ medflt_imns = median_filter(imns,5)
 medflt_imng = median_filter(imng,5)
 ##--your-code-ends-here--##
 
-
 ## Apply bilateral filter to each image with window size 11.
 ## See section 3.3.1 of Szeliski's book
 ## Use sigma value 2.5 for the domain kernel and 0.1 for range kernel.
-
 ## Set bilateral filter parameters. (Replace with your values)
 wsize = 11
 sigma_d = 2.5
@@ -137,23 +135,28 @@ sigma_r = 0.1
 bflt_imns = bilateral_filter(imns, wsize, sigma_d, sigma_r)
 bflt_imng = bilateral_filter(imng, wsize, sigma_d, sigma_r)
 
-
 # Display filtering results
 fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(16,8))
 ax = axes.ravel()
 ax[0].imshow(imns, cmap='gray')
-ax[0].set_title("Input image")
+ax[0].set_title("Input image - Salt n Pepper")
 ax[1].imshow(gflt_imns, cmap='gray')
-ax[1].set_title("Result of gaussian filtering")
+#ax[1].set_title("Input image")
+#ax[1].set_title("Result of gaussian filtering")
 ax[2].imshow(medflt_imns, cmap='gray')
-ax[2].set_title("Result of median filtering")
+#ax[2].set_title("Result of median filtering")
 ax[3].imshow(bflt_imns, cmap='gray')
-ax[3].set_title("Result of bilateral filtering")
+#ax[3].set_title("Result of bilateral filtering")
 ax[4].imshow(imng, cmap='gray')
+ax[4].set_title("Input image - Gaussian Noise")
 ax[5].imshow(gflt_imng, cmap='gray')
+ax[5].set_title("Result of gaussian filtering")
 ax[6].imshow(medflt_imng, cmap='gray')
+ax[6].set_title("Result of median filtering")
 ax[7].imshow(bflt_imng, cmap='gray')
-plt.suptitle("Filtering results", fontsize=20)
+ax[7].set_title("Result of bilateral filtering")
+plt.suptitle("Filtering results", fontsize=12)
+plt.tight_layout()
 plt.show()
 
 
