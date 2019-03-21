@@ -113,6 +113,25 @@ while True:
     img = np.zeros((480, 640, 3))  # dummy image for testing
     
     #######-your-code-starts-here-########
+     retval, img = cam.read()
+    img = cv2.flip(img, 1)
+    img_copy = imresize(img, (img_height, img_width))
+    img_copy = np.array([img_copy])
+    preds = model.predict(img_copy)
+    ratio_h = np.shape(img)[0] / img_height
+    ratio_w = np.shape(img)[1] / img_width
+    for pred in preds[0]:
+        if (pred[1] != 0):
+            xmin = int(pred[2] * ratio_w)
+            ymin = int(pred[3] * ratio_h)
+            xmax = int(pred[4] * ratio_w)
+            ymax = int(pred[5] * ratio_h)
+
+            #Bounding Box
+            cv2.rectangle(img, (xmin, ymin), (xmax, ymax), color=(255, 0, 0), thickness=3)
+            #Label Display
+            cv2.putText(img, classes[int(pred[0])], (xmin, ymin - 8), cv2.FONT_HERSHEY_SIMPLEX, fontScale=0.8,
+                        color=(0, 255, 255))
 
     #######-your-code-ends-here-########     
     
