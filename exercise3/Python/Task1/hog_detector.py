@@ -54,8 +54,12 @@ img = cv2.imread(filename)
 
 
 ##--your-code-start-here--##
-scale = 2.0
-winStride = (13,13)
+#scale = 2.0
+#winStride = (13,13)
+#padding = (32,32)
+#hitThreshold = 0.0
+scale = 1.1
+winStride = (7,7)
 padding = (32,32)
 hitThreshold = 0.0
 ##--your-code-ends-here--##
