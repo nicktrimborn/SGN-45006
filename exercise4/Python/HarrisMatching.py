@@ -15,7 +15,7 @@ def harris(im, sigma=1.0, relTh=0.0001, k=0.04):
     # Get smoothing and derivative filters
     g, _, _, _, _, _, = gaussian2(sigma)
     _, gx, gy, _, _, _, = gaussian2(np.sqrt(0.5))
-    
+
     # Partial derivatives
     Ix = conv2(im, -gx, mode='constant')
     Iy = conv2(im, -gy, mode='constant')
@@ -35,7 +35,7 @@ def harris(im, sigma=1.0, relTh=0.0001, k=0.04):
     # "Flat": |R| = small
     R = detC-k*traceC**2
     maxCornerValue = np.amax(R)
-    
+
     # Take only the local maxima of the corner response function
     fp = np.ones((3,3))
     fp[1,1] = 0
@@ -176,3 +176,5 @@ for k in range(np.minimum(len(id_ncc), Nvis)):
     plt.plot([x1[int(pairs[l, 0])], x2[int(pairs[l, 1])]+I1.shape[1]], 
          [y1[int(pairs[l, 0])], y2[int(pairs[l, 1])]])
     
+
+plt.show()
