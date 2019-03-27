@@ -9,7 +9,7 @@ x, y = data[0,:], data[1,:]
 plt.figure(1, (10,10))
 plt.plot(x, y, 'kx')
 plt.axis('scaled')
-
+# plt.show()
 
 # m is the number of data points
 m = np.size(x)*1.0
@@ -26,8 +26,6 @@ p = 0.999
 N_estimated = np.log(1-p) / np.log(1-(1-e)**s)
 print("Estimated number of samples: %.1f" % N_estimated)
 
-
-
 ############## RANSAC loop ######################
 
 # First initialize some variables
@@ -38,7 +36,6 @@ best_line = np.zeros((3,1))
 
 # Data points in homogeneous coordinates
 points_h = np.vstack((x,y,np.ones((int(m)))))
-
 while N > sample_count:
     # Pick two random samples
     samples = np.random.choice(np.arange(len(x)), 2, replace=False)
@@ -49,14 +46,21 @@ while N > sample_count:
     # of the points (in homogeneous coordinates).
     
     ##-your-code-starts-here-##
-    
+    # print(points_h[:,a])
+    # print(points_h[:,b])
+    l = np.cross(points_h[:,a],points_h[:,b])
+    # print(xing_line)
     ##-your-code-ends-here-##
         
     # Determine inliers by finding the indices for the line and data point dot
     # products that are less than inlier distance threshold t.
-    
-    ##-your-code-starts-here-##
 
+    inliers = []
+    ##-your-code-starts-here-##
+    for i in range(int(m)):
+        dist = np.abs(np.dot(l, points_h[:,i]))
+        if (dist <= t):
+            inliers.append(i)
     ##-your-code-ends-here-##
 
     # Store the line in best_line and update max_inliers if the number of 
@@ -77,15 +81,30 @@ while N > sample_count:
 # find the inliers similarly as above but this time for the best line.
     
 ##-your-code-starts-here-##
+inliers2 = []
+for i in range(int(m)):
+    dist = np.abs(np.dot(best_line, points_h[:,i]))
+    if (dist <= t):
+        inliers2.append(i)
+# print(bestline_inliers)
 
-##-your-code-ends-here-##  
+x_inliers = []
+y_inliers = []
+for i in range(len(inliers2)):
+    # print(bestline_inliers[i])
+    x_inliers.append(x[inliers2[i]])
+    y_inliers.append(y[inliers2[i]])
+##-your-code-ends-here-##
+# print(x_inliers)
 
 # Fit a line to the above-given points (non-homogeneous)
 l = linefitlsq(x_inliers, y_inliers)
-
+print(l)
+#l = best_line
 # Plot the resulting line and the inliers
 k = -l[0] / l[1]
 b = -l[2] / l[1]
 plt.plot(np.arange(1,101), k*np.arange(1,101)+b, 'm-')
-plt.plot(x[inliers], y[inliers], 'ro', markersize=7)
+plt.plot(x[inliers2], y[inliers2], 'ro', markersize=7)
+plt.show()
 
