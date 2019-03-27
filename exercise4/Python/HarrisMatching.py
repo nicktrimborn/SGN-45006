@@ -115,7 +115,7 @@ for k in range(npts1):
     if k == ids2[ids1[k]]:
         pairs.append(np.array([k, ids1[k], ss1[k]]))
 pairs = np.array(pairs)
-
+# print(pairs)
 ## We sort the mutually nearest neighbors based on the SSD
 sorted_ssd = np.sort(pairs[:,2], axis=0)
 id_ssd = np.argsort(pairs[:,2], axis=0)
@@ -154,8 +154,37 @@ for k in range(np.minimum(len(id_ssd), Nvis)):
 ## in order to find the best matches (i.e. not ascending order as with SSD). 
 
 ##-your-code-starts-here-##
-sorted_ncc = [] # replace with your implementation
-id_ncc = []  # replace with your implementation
+distmat = np.zeros((npts1, npts2))
+g_ = np.mean(patches1)
+f_ = np.mean(patches2)
+for i1 in range(npts1):
+    for i2 in range(npts2):
+        # Sum of Squared Differences
+        # distmat[i1,i2]=np.sum((patches1[:,:,i1]-patches2[:,:,i2])**2)
+            num = np.sum((patches1[:,:,i1]-g_) * (patches2[:,:,i2] - f_))
+            den = np.sqrt(np.sum((patches1[:,:,i1] - g_)**2) * np.sum((patches2[:,:,i2] - f_)**2))
+            distmat[i1, i2] = num / den
+
+ss1 = np.amax(distmat, axis=1)
+ids1 = np.argmax(distmat, axis=1)
+ss2 = np.amax(distmat, axis=0)
+ids2 = np.argmax(distmat, axis=0)
+
+pairs = []
+for k in range(npts1):
+    if k == ids2[ids1[k]]:
+        pairs.append(np.array([k, ids1[k], ss1[k]]))
+pairs = np.array(pairs)
+
+# print(pairs)
+
+sorted_ncc = np.sort(pairs[:,2], axis=0)
+sorted_ncc = np.flip(sorted_ncc)
+id_ncc = np.argsort(pairs[:,2], axis=0)
+id_ncc = np.flip(id_ncc)
+
+print(sorted_ncc)
+
 ##-your-code-ends-here-##
 
 
