@@ -72,13 +72,15 @@ for k in range(Nvis):
     plt.plot([loc1[0], loc2[0]+img1.shape[1]], [loc1[1], loc2[1]], 'c-')
     
 # How many of the top 5 matches appear to be correct correspondences?
-    
+# plt.show()  # 2 out of 5 correct
     
 ################## Nearest neighbor ratio based sorting #######################
 ## Now, your task is to compute and visualize the top 5 matches based on 
 ## the nearest neighbor distance ratio defined in exercise sheet.
 ## How many of those are correct correspondences?
-    
+
+# all 5 match
+
 ## HINT:  Loop through the first column in 'pairs' (first feature vector indices), 
 ## use each index value from this column to get the corresponding row from 
 ## distmat_sorted, get the nearest and second nearest distances from this row 
@@ -89,9 +91,16 @@ distmat_sorted = np.sort(distmat, axis=1)  # each row sorted in ascending order
 nndr=np.zeros(pairs.shape[0])  # pre-allocate memory
 
 ##-your-code-starts-here-##
+for i in range(len(pairs)):
+    # print(int(pairs[i][0]))
+    k = int(pairs[i][0])
+    d1 = distmat_sorted[k][0]
+    d2 = distmat_sorted[k][1]
+    nndr[i] = d1/d2
 
+id_nndr = np.argsort(nndr, axis=0)
+# print(id_nndr)
 ##-your-code-ends-here-##
-
 
 # Visualize the 5 best matches
 Nvis = 5
@@ -117,3 +126,4 @@ for k in range(Nvis):
     plt.plot([loc1[0], loc2[0]+img1.shape[1]], [loc1[1], loc2[1]], 'c-')
 
 # How many of the top 5 matches appear to be correct correspondences?
+plt.show()
