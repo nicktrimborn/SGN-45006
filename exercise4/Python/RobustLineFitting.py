@@ -79,23 +79,15 @@ while N > sample_count:
 
 # Least squares fitting to the inliers of the best hypothesis, i.e
 # find the inliers similarly as above but this time for the best line.
-    
+inliers.clear()
 ##-your-code-starts-here-##
-inliers2 = []
 for i in range(int(m)):
     dist = np.abs(np.dot(best_line, points_h[:,i]))
     if (dist <= t):
-        inliers2.append(i)
-# print(bestline_inliers)
+        inliers.append(i)
 
-x_inliers = []
-y_inliers = []
-for i in range(len(inliers2)):
-    # print(bestline_inliers[i])
-    x_inliers.append(x[inliers2[i]])
-    y_inliers.append(y[inliers2[i]])
-##-your-code-ends-here-##
-# print(x_inliers)
+x_inliers = x[inliers]
+y_inliers = y[inliers]
 
 # Fit a line to the above-given points (non-homogeneous)
 l = linefitlsq(x_inliers, y_inliers)
@@ -105,6 +97,6 @@ print(l)
 k = -l[0] / l[1]
 b = -l[2] / l[1]
 plt.plot(np.arange(1,101), k*np.arange(1,101)+b, 'm-')
-plt.plot(x[inliers2], y[inliers2], 'ro', markersize=7)
+plt.plot(x[inliers], y[inliers], 'ro', markersize=7)
 plt.show()
 
