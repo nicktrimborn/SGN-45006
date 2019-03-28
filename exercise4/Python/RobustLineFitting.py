@@ -46,10 +46,7 @@ while N > sample_count:
     # of the points (in homogeneous coordinates).
     
     ##-your-code-starts-here-##
-    # print(points_h[:,a])
-    # print(points_h[:,b])
     l = np.cross(points_h[:,a],points_h[:,b])
-    # print(xing_line)
     ##-your-code-ends-here-##
         
     # Determine inliers by finding the indices for the line and data point dot

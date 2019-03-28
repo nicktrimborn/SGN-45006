@@ -19,7 +19,6 @@ vpts1_loc = loadmat('vpts1.mat')['vpts1_loc']
 vpts1_scale = loadmat('vpts1.mat')['vpts1_scale']
 vpts2_loc = loadmat('vpts2.mat')['vpts2_loc']
 vpts2_scale = loadmat('vpts2.mat')['vpts2_scale']
-
 # We compute the pairwise distances of feature vectors to matrix 'distmat'
 
 ## Vectorized version: sqrt(xTx + yTy - 2xTy)
@@ -42,7 +41,6 @@ for k in range(ids1.size):
         pairs.append(np.array([k, ids1[k], dist1[k]]))
 pairs = np.array(pairs)
 
-
 ################### Nearest neighbor based sorting ###########################
 # We sort the mutually nearest neighbors based on the distance 
 snnd = np.sort(pairs[:,2], axis=0)
@@ -50,7 +48,6 @@ id_nnd = np.argsort(pairs[:,2], axis=0)
 
 # We visualize the 5 best matches 
 Nvis = 5
-
 plt.figure(figsize=(16, 8))
 plt.suptitle("Top 5 mutual nearest neigbors of SURF features", fontsize=20)
 plt.imshow(np.hstack((img1, img2)), cmap='gray')
@@ -72,8 +69,9 @@ for k in range(Nvis):
     plt.plot([loc1[0], loc2[0]+img1.shape[1]], [loc1[1], loc2[1]], 'c-')
     
 # How many of the top 5 matches appear to be correct correspondences?
+
 # plt.show()  # 2 out of 5 correct
-    
+
 ################## Nearest neighbor ratio based sorting #######################
 ## Now, your task is to compute and visualize the top 5 matches based on 
 ## the nearest neighbor distance ratio defined in exercise sheet.
@@ -91,7 +89,7 @@ distmat_sorted = np.sort(distmat, axis=1)  # each row sorted in ascending order
 nndr=np.zeros(pairs.shape[0])  # pre-allocate memory
 
 ##-your-code-starts-here-##
-for i in range(len(pairs)):
+for i in range(pairs.shape[0]):
     # print(int(pairs[i][0]))
     k = int(pairs[i][0])
     d1 = distmat_sorted[k][0]
@@ -99,12 +97,10 @@ for i in range(len(pairs)):
     nndr[i] = d1/d2
 
 id_nndr = np.argsort(nndr, axis=0)
-# print(id_nndr)
 ##-your-code-ends-here-##
 
 # Visualize the 5 best matches
 Nvis = 5
-
 plt.figure(figsize=(16, 8))
 plt.suptitle("SURF matching with NNDR", fontsize=20)
 plt.imshow(np.hstack((img1, img2)), cmap='gray')

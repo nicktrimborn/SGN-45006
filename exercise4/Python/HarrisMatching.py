@@ -42,7 +42,7 @@ def harris(im, sigma=1.0, relTh=0.0001, k=0.04):
     maxImg = maximum_filter(R, footprint=fp, mode='constant')
     
     # Test if cornerness is larger than neighborhood
-    cornerImg = R>maxImg
+    cornerImg = R > maxImg
     
     # Threshold for low value maxima
     y, x = np.nonzero((R>relTh*maxCornerValue)*cornerImg) 
@@ -93,7 +93,6 @@ for i in range(npts2):
     patch = map_coordinates(I2, (yv + y2[i], xv + x2[i]))
     patches2[:,:,i] = patch
 
-
 ############################ SSD MEASURE ######################################
 ## We compute the sum of squared differences (SSD) of pixels' intensities
 ## for all pairs of patches extracted from the two images
@@ -115,11 +114,10 @@ for k in range(npts1):
     if k == ids2[ids1[k]]:
         pairs.append(np.array([k, ids1[k], ss1[k]]))
 pairs = np.array(pairs)
-# print(pairs)
+
 ## We sort the mutually nearest neighbors based on the SSD
 sorted_ssd = np.sort(pairs[:,2], axis=0)
 id_ssd = np.argsort(pairs[:,2], axis=0)
-
 
 ## Next we visualize the 40 best matches which are mutual nearest neighbors
 ## and have the smallest SSD values
@@ -136,8 +134,6 @@ for k in range(np.minimum(len(id_ssd), Nvis)):
     plt.plot(x2[int(pairs[l, 1])] + I1.shape[1], y2[int(pairs[l, 1])], 'rx')
     plt.plot([x1[int(pairs[l, 0])], x2[int(pairs[l, 1])]+I1.shape[1]], 
          [y1[int(pairs[l, 0])], y2[int(pairs[l, 1])]])
-
-
 
 ############################ NCC MEASURE ######################################
 ## Now, your task is to do matching in similar manner but using normalised 
@@ -161,7 +157,7 @@ for i1 in range(npts1):
     for i2 in range(npts2):
         # Sum of Squared Differences
         # distmat[i1,i2]=np.sum((patches1[:,:,i1]-patches2[:,:,i2])**2)
-            num = np.sum((patches1[:,:,i1]-g_) * (patches2[:,:,i2] - f_))
+            num = np.sum((patches1[:,:,i1] - g_) * (patches2[:,:,i2] - f_))
             den = np.sqrt(np.sum((patches1[:,:,i1] - g_)**2) * np.sum((patches2[:,:,i2] - f_)**2))
             distmat[i1, i2] = num / den
 
@@ -176,23 +172,18 @@ for k in range(npts1):
         pairs.append(np.array([k, ids1[k], ss1[k]]))
 pairs = np.array(pairs)
 
-# print(pairs)
-
 sorted_ncc = np.sort(pairs[:,2], axis=0)
+# Flip to be in descending order
 sorted_ncc = np.flip(sorted_ncc)
 id_ncc = np.argsort(pairs[:,2], axis=0)
+# Flip to be in descending order
 id_ncc = np.flip(id_ncc)
-
-print(sorted_ncc)
-
 ##-your-code-ends-here-##
-
 
 # Next we visualize the 40 best matches which are mutual nearest neighbors
 # and have the smallest SSD values
 Nvis = 40
 montage = np.concatenate((I1, I2), axis=1)
-
 plt.figure(figsize=(16, 8))
 plt.suptitle("The best 40 matches according to NCC measure", fontsize=20)
 plt.imshow(montage, cmap='gray')
@@ -201,9 +192,7 @@ for k in range(np.minimum(len(id_ncc), Nvis)):
     l = id_ncc[k]
     plt.plot(x1[int(pairs[l, 0])], y1[int(pairs[l, 0])], 'rx')
     plt.plot(x2[int(pairs[l, 1])] + I1.shape[1], y2[int(pairs[l, 1])], 'rx')
-    
-    plt.plot([x1[int(pairs[l, 0])], x2[int(pairs[l, 1])]+I1.shape[1]], 
+    plt.plot([x1[int(pairs[l, 0])], x2[int(pairs[l, 1])]+I1.shape[1]],
          [y1[int(pairs[l, 0])], y2[int(pairs[l, 1])]])
-    
 
 plt.show()
