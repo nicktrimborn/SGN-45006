@@ -30,7 +30,7 @@ if not cam.isOpened():
 gray_prev = None  # previous frame
 p0 = []  # previous points
 
-
+frames = 0
 while True:
     try:            
         # Get a single frame
@@ -38,13 +38,20 @@ while True:
         if not ret_val:
             break
         else:
+            frames = frames+1
             # Mirror
             img = cv2.flip(img, 1)
             
             # Grayscale copy
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            
-            if len(p0) <= 5:
+            if frames % 100 == 0:
+                p0 = []
+                print(frames)
+                frames = 0
+                print(frames)
+                print(p0)
+
+            if len(p0) <= 5 :
                 # Detection
                 img = cv2.putText(img, 'Detection', (0,20),
                                   cv2.FONT_HERSHEY_SIMPLEX, 0.8, color=(0,255,255))
@@ -62,8 +69,9 @@ while True:
                     # the face area is considered in the tracking.
                     
                     ##-your-code-starts-here-##
-                    roi_gray = gray  # replace with your implementation
-                    ##-your-code-ends-here-##         
+                    for x_upperleft, y_upperleft, width, height in faces:
+                        roi_gray = gray[y_upperleft:y_upperleft + height, x_upperleft:x_upperleft + width]
+                    ##-your-code-ends-here-##
                     
                     # Get trackable points
                     p0 = cv2.goodFeaturesToTrack(roi_gray, 
@@ -72,11 +80,11 @@ while True:
                                                         minDistance=10)
                     
                     # Convert points to form (point_id, coordinates)
-                    p0 = p0[:,0,:]
-                    
+                    p0 = p0[:, 0, :]
                     # Convert from ROI to image coordinates
                     ##-your-code-starts-here-##
-                    p0 = []  # replace with you implementation
+                    p0[:, 0] = p0[:, 0] + x_upperleft
+                    p0[:, 1] = p0[:, 1] + y_upperleft
                     ##-your-code-ends-here-##
 
                 # Save grayscale copy for next iteration
@@ -95,18 +103,21 @@ while True:
                 # Select good points. Use isFound to select valid found points 
                 # from p1.
                 ##-your-code-starts-here-##
-
+                p1 = [p1[i] for i in range(len(isFound)) if isFound[i] == 1]
+                p1 = np.array(p1)
                 ##-your-code-ends-here-##
                 
                 # Draw points using e.g. cv2.circle
                 ##-your-code-starts-here-##
-
+                for p in p1:
+                    img = cv2.circle(img, (p[0], p[1]), radius=5, color=(0, 255, 255))
                 ##-your-code-ends-here-##
                 
                 # Update p0 (which points should be kept?) and gray_prev for 
                 # next iteration
                 ##-your-code-starts-here-##
-
+                p0 = p1
+                gray_prev = gray.copy()
                 ##-your-code-ends-here-##
     
             # Quit text
